@@ -15,3 +15,4 @@ DEBUG = True
 SECRET_KEY="c4623a202d5b4e47c9a28380c60de500d5815b78"
 STATIC_DIR = os.path.join(APPLICATION_DIR, 'static')
 IMAGES_DIR = os.path.join(STATIC_DIR, 'images')
+WTF_CSRF_ENABLED = False
