@@ -1,9 +1,9 @@
 from flask import Flask
-from config import development
+from config import testing
 from flask_orator import Orator
 
 app = Flask(__name__)
-app.config.from_object(development)
+app.config.from_object(testing)
 
 db = Orator(app)
 
