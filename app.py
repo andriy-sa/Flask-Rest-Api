@@ -34,8 +34,10 @@ def create_app(type='development'):
     from views.default import default_view
     from views.users import users_view
     from views.companies import companies_view
+    from views.auth import auth_view
 
     # Register Routes
+    app.register_blueprint(auth_view, url_prefix='/api')
     app.register_blueprint(users_view, url_prefix='/api/user')
     app.register_blueprint(companies_view, url_prefix='/api/company')
     # must register last one

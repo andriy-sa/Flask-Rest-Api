@@ -5,6 +5,28 @@ from models.company import Company
 from models.user import User
 
 
+class LoginForm(Form):
+    email = form.StringField('email', validators=[
+        validators.DataRequired(),
+        validators.Email()
+    ])
+    password = form.PasswordField('password', validators=[
+        validators.DataRequired()
+    ])
+    remember = form.BooleanField('remember', default=False)
+
+    def validate(self):
+        if not super(LoginForm, self).validate():
+            return False
+
+        self.user = User.authenticate(self.email.data, self.password.data)
+        if not self.user:
+            self.email.errors.append("Invalid email or password.")
+            return False
+        else:
+            return True
+
+
 class CompanyForm(Form):
     name = form.StringField('name', validators=[
         validators.DataRequired(),

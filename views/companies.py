@@ -2,6 +2,7 @@ from flask import Blueprint, make_response, jsonify, request
 from models.company import Company
 from helpers import int_from_request, prepare_sorting_params
 from forms import CompanyForm
+from decorators import login_required
 
 companies_view = Blueprint('companies_view', __name__)
 
@@ -12,10 +13,11 @@ def get_by_id(id):
     if not company:
         return make_response(jsonify({'message': 'company not gound'})), 404
 
-    return company.to_json(), 200
+    return jsonify(company.serialize()), 200
 
 
 @companies_view.route('/get_list', methods=['GET'])
+@login_required(is_admin=True)
 def get_list():
     page = int_from_request('page', 1)
     limit = int_from_request('limit', 10)
@@ -44,7 +46,7 @@ def create():
         'address': form.data.get('address'),
     })
 
-    return company.to_json(), 200
+    return jsonify(company.serialize()), 200
 
 
 @companies_view.route('/update/<int:id>', methods=['PUT'])
@@ -61,4 +63,4 @@ def update(id):
     company.address = form.data.get('address')
     company.save()
 
-    return company.to_json(), 200
+    return jsonify(company.serialize()), 200

@@ -5,7 +5,7 @@ from orator.orm import belongs_to
 
 
 class User(Model):
-    __fillable__ = ['username', 'first_name', 'last_name', 'email', 'country', 'city', 'phone', 'password', 'is_admin']
+    __fillable__ = ['username', 'first_name', 'last_name', 'email', 'country', 'city', 'phone', 'password', 'is_admin', 'is_active']
     __hidden__ = ['password']
 
     @belongs_to('company_id', 'id')
@@ -22,11 +22,16 @@ class User(Model):
 
     @staticmethod
     def authenticate(email, password):
-        user = User.query.filter(User.email == email).first()
         user = User.where('email', email).first()
         if user and user.check_password(password):
             return user
         return False
+
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return True
 
 
 @login_manager.user_loader

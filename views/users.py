@@ -12,7 +12,7 @@ def get_user_by_id(id):
     if not user:
         return make_response(jsonify({'message': 'user not found'})), 404
 
-    return user.to_json(), 200
+    return jsonify(user.serialize()), 200
 
 
 @users_view.route('/get_list', methods=["GET"])
@@ -69,7 +69,7 @@ def create():
     user.phone = form.data.get('phone','')
     user.save()
 
-    return user.to_json(), 200
+    return jsonify(user.serialize()), 200
 
 
 @users_view.route('/update/<int:id>', methods=['PUT'])
@@ -94,6 +94,6 @@ def update(id):
     user.phone = form.data.get('phone', '')
     user.save()
 
-    return user.to_json(), 200
+    return jsonify(user.serialize()), 200
 
 

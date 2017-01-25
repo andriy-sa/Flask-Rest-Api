@@ -18,6 +18,7 @@ class CreateUsersTable(Migration):
             table.string('phone').default('').nullable()
             table.string('password')
             table.boolean('is_admin').default(0)
+            table.boolean('is_active').default(1)
             table.integer('company_id').unsigned().index().nullable()
             table.foreign('company_id').references('id').on('companies').on_delete('CASCADE')
             table.timestamps()
