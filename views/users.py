@@ -2,6 +2,7 @@ from flask import Blueprint, make_response, jsonify, request
 from models.user import User
 from helpers import int_from_request, prepare_sorting_params
 from forms import UserForm, UserUpdateForm
+from models.company import Company
 
 users_view = Blueprint('users_view', __name__)
 
@@ -54,6 +55,7 @@ def get_by_company(id):
 @users_view.route('/create', methods=['POST'])
 def create():
     form = UserForm(request.form)
+    form.company_id.choices = [(str(c.id), str(c.id)) for c in Company.select('id').get()]
     if not form.validate():
         return jsonify(form.errors), 400
 
@@ -79,6 +81,7 @@ def update(id):
         return make_response(jsonify({'message': 'user not found'})), 404
 
     form = UserUpdateForm(request.form)
+    form.company_id.choices = [(str(c.id), str(c.id)) for c in Company.select('id').get()]
     form.set_user_id(id)
 
     if not form.validate():

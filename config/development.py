@@ -10,7 +10,7 @@ ORATOR_DATABASES = {
         'port': '5432',
     }
 }
-APPLICATION_DIR = os.path.dirname(os.path.realpath(__file__))
+APPLICATION_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 DEBUG = True
 SECRET_KEY="c4623a202d5b4e47c9a28380c60de500d5815b78"
 STATIC_DIR = os.path.join(APPLICATION_DIR, 'static')

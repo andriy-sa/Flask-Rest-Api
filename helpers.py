@@ -1,4 +1,5 @@
 from flask import request
+import random, string
 
 
 def int_from_request(field, default):
@@ -21,3 +22,7 @@ def prepare_sorting_params(sort_list, default):
         sort = default
 
     return sort, reverse
+
+
+def str_random(length):
+    return ''.join(random.choice(string.ascii_lowercase) for i in range(length))

@@ -1,8 +1,12 @@
+import os
+import wtforms as form
 from flask_wtf import Form
 from wtforms import validators
-import wtforms as form
-from models.company import Company
 from models.user import User
+from flask_wtf.file import FileAllowed
+from werkzeug.utils import secure_filename
+from app import app
+from helpers import str_random
 
 
 class LoginForm(Form):
@@ -36,6 +40,25 @@ class CompanyForm(Form):
         validators.DataRequired(),
         validators.Length(max=255)
     ])
+    logo = form.FileField('logo', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png'])
+    ])
+
+    def upload_logo(self):
+        f = self.logo.data
+        filename = "%s%s" % (str_random(8), secure_filename(f.filename))
+        f.save(os.path.join(
+            app.config.get('STATIC_DIR'), 'uploads', filename
+        ))
+        return filename
+
+    def remove_logo(self, logo):
+        try:
+            os.remove(os.path.join(
+                app.config.get('STATIC_DIR'), 'uploads', logo
+            ))
+        except:
+            pass
 
 
 class UserForm(Form):
@@ -67,8 +90,7 @@ class UserForm(Form):
         validators.DataRequired(),
         validators.Length(min=6, max=16)
     ])
-    company_id = form.SelectField('company_id', validators=[validators.DataRequired(), ],
-                                  choices=[(str(c.id), str(c.id)) for c in Company.select('id').get()])
+    company_id = form.SelectField('company_id', validators=[validators.DataRequired(), ])
 
     def validate_email(self, field):
         user = User.where('email', field.data).first()
@@ -101,8 +123,7 @@ class UserUpdateForm(Form):
     phone = form.StringField('phone', validators=[
         validators.Length(max=255)
     ])
-    company_id = form.SelectField('company_id', validators=[validators.DataRequired(), ],
-                                  choices=[(str(c.id), str(c.id)) for c in Company.select('id').get()])
+    company_id = form.SelectField('company_id', validators=[validators.DataRequired(), ])
 
     def set_user_id(self, user_id):
         self.user_id = user_id
