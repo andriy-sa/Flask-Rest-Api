@@ -36,14 +36,18 @@ def create_app(type='development'):
     from views.default import default_view
     from views.users import users_view
     from views.companies import companies_view
+    from views.projects import projects_view
     from views.auth import auth_view
 
     # Register Routes
     app.register_blueprint(auth_view, url_prefix='/api')
     app.register_blueprint(users_view, url_prefix='/api/user')
     app.register_blueprint(companies_view, url_prefix='/api/company')
+    app.register_blueprint(projects_view, url_prefix='/api/project')
     # must register last one
     app.register_blueprint(default_view)
+
+    app.status = True
 
     return app
 
@@ -59,14 +63,27 @@ def create_elastic_index():
         "mappings": {
             "projects": {
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "title": {
                         "type": "string"
                     },
                     "description": {
                         "type": "string"
                     },
+                    "price": {
+                        "type": "double"
+                    },
+                    "published": {
+                        "type": "boolean"
+                    },
                     "location": {
                         "type": "geo_point"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "index": "no"
                     }
                 }
             }
@@ -75,25 +92,3 @@ def create_elastic_index():
     # create index
     res = es.indices.create(index=index, ignore=400, body=settings)
     click.echo('Index created')
-
-
-@app.cli.command()
-def create_elastic_document():
-    index = 'test_index'
-    if es.exists(index=index, id=1, doc_type='projects'):
-        res = es.update(index=index, id=1, doc_type='projects', body={"doc": {
-            "title": "First project",
-            "description": "Description of project",
-            "location": "20,50"
-        }})
-        message = "Document updated"
-    else:
-        res = es.update(index=index, id=1, doc_type='projects', body={
-            "title": "First project",
-            "description": "Description of project",
-            "location": "20,50"
-        })
-        message = "Document created"
-    print(res)
-
-    click.echo(message)

@@ -11,6 +11,15 @@ def int_from_request(field, default):
     return result
 
 
+def float_from_request(field, default):
+    try:
+        result = float(request.args.get(field, default))
+    except Exception:
+        result = default
+
+    return result
+
+
 def prepare_sorting_params(sort_list, default):
     sort = request.args.get('sort', default)
     reverse = request.args.get('reverse', 'DESC')

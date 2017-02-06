@@ -123,7 +123,7 @@ class UserUpdateForm(Form):
     phone = form.StringField('phone', validators=[
         validators.Length(max=255)
     ])
-    company_id = form.SelectField('company_id', validators=[validators.DataRequired(), ])
+    company_id = form.SelectField('company_id', validators=[validators.DataRequired()])
 
     def set_user_id(self, user_id):
         self.user_id = user_id
@@ -132,3 +132,22 @@ class UserUpdateForm(Form):
         user = User.where('email', field.data).where('id', '!=', self.user_id).first()
         if user:
             raise form.ValidationError(message='User with this email already exist')
+
+
+class ProjectForm(Form):
+    title = form.StringField('title', validators=[
+        validators.DataRequired(),
+        validators.Length(max=255)
+    ])
+    description = form.TextAreaField('description')
+    price = form.FloatField('price', validators=[
+        validators.DataRequired()
+    ])
+    longitude = form.DecimalField('longitude', places=9, rounding=6, validators=[
+        validators.DataRequired()
+    ])
+    latitude = form.DecimalField('latitude', places=9, rounding=6, validators=[
+        validators.DataRequired()
+    ])
+    published = form.BooleanField('published')
+    company_id = form.SelectField('company_id', validators=[validators.DataRequired()])
