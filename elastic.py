@@ -30,6 +30,7 @@ class Elastic(object):
     def delete_project_document(self, id):
         if es.exists(index=self.index, id=id, doc_type='projects'):
             es.delete(index=self.index, id=id, doc_type='projects')
+            es.indices.refresh(index=self.index)
 
     def search_project(self):
         q = request.args.get('q', '')
@@ -55,10 +56,22 @@ class Elastic(object):
 
         result = Search(using=es, index=self.index, doc_type='projects')
 
-        result = result.filter(Q('term', published=published)) \
-            .filter('geo_distance', distance="10km", location={"lat": lat, "lon": lon}) \
-            .execute()
+        try:
+            result = result.filter(Q('term', published=published)) \
+                .filter('geo_distance', distance="10km", location={"lat": lat, "lon": lon}) \
+                .execute()
+        except:
+            return self.get_empty_elastic_result()
 
-        #.sort('-price') \
+        # .sort('-price') \
 
         return result.to_dict()
+
+    def get_empty_elastic_result(self):
+        return {
+            'hits': {
+                'hits': [],
+                'max_score': None,
+                'total': 0
+            }
+        }
