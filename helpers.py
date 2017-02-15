@@ -19,6 +19,14 @@ def float_from_request(field, default):
 
     return result
 
+def bool_from_request(field, default):
+    try:
+        result = bool(int(request.args.get(field, default)))
+    except Exception:
+        result = default
+
+    return result
+
 
 def prepare_sorting_params(sort_list, default):
     sort = request.args.get('sort', default)

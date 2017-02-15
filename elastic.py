@@ -1,7 +1,7 @@
 from flask import request
 from app import es
 from elasticsearch_dsl import Search, Q
-from helpers import float_from_request
+from helpers import float_from_request, bool_from_request
 
 
 class Elastic(object):
@@ -36,7 +36,7 @@ class Elastic(object):
         q = request.args.get('q', '')
         min_price = float_from_request('min_price', 0)
         max_price = float_from_request('max_price', 999999)
-        published = bool(request.args.get('published', True))
+        published = bool_from_request('published', True)
 
         result = Search(using=es, index=self.index, doc_type='projects')
         if q:
