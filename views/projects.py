@@ -96,3 +96,12 @@ def delete(id):
     elastic.delete_project_document(id)
 
     return jsonify({'message': 'project successfully deleted'}), 200
+
+@projects_view.route('/sync', methods=["GET"])
+def sync():
+    elastic = Elastic()
+    projects = Project.all()
+    for project in projects:
+        elastic.sync_project_document(project)
+
+    return jsonify({'message': 'projects successfully sync to elastic'}), 200

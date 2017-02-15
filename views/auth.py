@@ -1,20 +1,30 @@
-from flask import Blueprint, request, jsonify
-from flask_login import login_user, logout_user, current_user, login_required
-from forms import LoginForm
-from models.user import User
+from flask import Blueprint, request, jsonify, current_app, _request_ctx_stack
+from flask_login import logout_user, current_user
+from app import jwt
+from flask_jwt import JWTError
+from jwt import InvalidTokenError
 
 auth_view = Blueprint('auth_view', __name__)
 
 
 @auth_view.route('/login', methods=['POST'])
 def login():
-    form = LoginForm(request.form)
-    if not form.validate():
-        return jsonify(form.errors), 401
+    data = request.get_json()
+    username = data.get(current_app.config.get('JWT_AUTH_USERNAME_KEY'), None)
+    password = data.get(current_app.config.get('JWT_AUTH_PASSWORD_KEY'), None)
+    criterion = [username, password, len(data) == 2]
 
-    user = form.user
-    login_user(user, remember=bool(form.remember.data))
-    return jsonify(user.serialize()), 200
+    if not all(criterion):
+        raise JWTError('Bad Request', 'Invalid credentials')
+
+    user = jwt.authentication_callback(username, password)
+    if user:
+        access_token = jwt.jwt_encode_callback(user)
+
+        return jsonify({'user': user.serialize(), 'access_token': access_token.decode('utf-8')}), 200
+    else:
+        raise JWTError('Bad Request', 'Invalid credentials')
+
 
 
 @auth_view.route('/logout', methods=['GET'])
@@ -25,16 +35,20 @@ def logout():
 
 @auth_view.route('/me', methods=['GET'])
 def me():
-    if not current_user.is_authenticated:
-        return jsonify({'message': 'Unauthorized HTTP responses'}), 401
+    token = jwt.request_callback()
 
-    return jsonify(current_user.serialize()), 200
+    if token is None:
+        raise JWTError('Authorization Required', 'Request does not contain an access token',
+                       headers={'WWW-Authenticate': 'JWT realm="%s"' % 'token'})
 
+    try:
+        payload = jwt.jwt_decode_callback(token)
+    except InvalidTokenError as e:
+        raise JWTError('Invalid token', str(e))
 
-@auth_view.route('/force-login', methods=['GET'])
-def force_login():
-    user = User.find(1)
-    if user:
-        login_user(user, True)
+    _request_ctx_stack.top.current_identity = identity = jwt.identity_callback(payload)
 
-    return jsonify({'status': 'success'}), 200
+    if identity is None:
+        raise JWTError('Invalid JWT', 'User does not exist')
+
+    return jsonify(identity), 200

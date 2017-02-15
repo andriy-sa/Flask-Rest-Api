@@ -27,6 +27,8 @@ class User(Model):
             return user
         return False
 
+    @staticmethod
+
     def get_id(self):
         return self.id
 
@@ -37,3 +39,19 @@ class User(Model):
 @login_manager.user_loader
 def _user_loader(user_id):
     return User.find(int(user_id))
+
+
+def identity(payload):
+    user_id = payload['identity']
+    user = User.find(user_id)
+    if user:
+        return user.serialize()
+
+    return None
+
+
+def authenticate(email, password):
+    user = User.where('email', email).first()
+    if user and user.check_password(password):
+        return user
+    return False

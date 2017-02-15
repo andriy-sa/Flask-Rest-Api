@@ -1,10 +1,11 @@
-from flask import Flask, g
+from flask import Flask, g, jsonify
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_orator import Orator
 from flask_elasticsearch import FlaskElasticsearch
 import click
 from config import development, production, testing
+from flask_jwt import JWT, current_identity
 
 app = Flask(__name__)
 
@@ -14,10 +15,29 @@ login_manager = LoginManager()
 bcrypt = Bcrypt()
 es = FlaskElasticsearch()
 
+jwt = JWT()
+
 
 @app.before_request
 def _before_reques():
     g.user = current_user
+
+
+@app.after_request
+def _after_request(response):
+    response.headers["Access-Control"] = "*"
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Headers"] = "X-REQUESTED-WITH, CONTENT-TYPE, ACCEPT"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, HEAD, OPTIONS"
+    response.headers["Access-Control-Expose-Headers"] = "CONTENT-TYPE, X-DEPRECATED"
+
+    return response
+
+
+@app.route('/api/reports', methods=['GET', 'POST'])
+def index(id=None):
+    return jsonify(success=True), 200
 
 
 def create_app(type='development'):
@@ -38,6 +58,11 @@ def create_app(type='development'):
     from views.companies import companies_view
     from views.projects import projects_view
     from views.auth import auth_view
+    from models.user import authenticate, identity
+
+    jwt.identity_handler(identity)
+    jwt.authentication_handler(authenticate)
+    jwt.init_app(app)
 
     # Register Routes
     app.register_blueprint(auth_view, url_prefix='/api')
@@ -60,6 +85,28 @@ def create_elastic_index():
         es.indices.delete(index=index)
     # index settings
     settings = {
+        "settings": {
+            "number_of_shards": 1,
+            "analysis": {
+                "filter": {
+                    "autocomplete_filter": {
+                        "type": "edge_ngram",
+                        "min_gram": 1,
+                        "max_gram": 20
+                    }
+                },
+                "analyzer": {
+                    "autocomplete": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": [
+                            "lowercase",
+                            "autocomplete_filter"
+                        ]
+                    }
+                }
+            }
+        },
         "mappings": {
             "projects": {
                 "properties": {
@@ -67,10 +114,11 @@ def create_elastic_index():
                         "type": "integer"
                     },
                     "title": {
-                        "type": "string"
+                        "type": "string",
+                        "analyzer": "autocomplete",
                     },
                     "description": {
-                        "type": "string"
+                        "type": "string",
                     },
                     "price": {
                         "type": "double"
