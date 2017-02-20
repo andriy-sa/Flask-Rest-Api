@@ -1,11 +1,20 @@
 import React from 'react'
 import {Link} from 'react-router'
 import classNames from 'classnames'
+import {connect} from 'react-redux'
+import {setUser} from '../../Actions/Auth'
 
-const Header = ({path, user}) => {
+class Header extends React.Component {
 
-  return (
-    <div className="header">
+  logout = () => {
+    localStorage.setItem('jwtToken', '');
+    this.props.setUser(null);
+    this.context.router.push('/login');
+  };
+
+  render() {
+
+    return (<div className="header">
       <nav className="navbar navbar-default">
         <div className="container">
           <div className="navbar-header">
@@ -20,14 +29,14 @@ const Header = ({path, user}) => {
           </div>
           <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul className="nav navbar-nav">
-              <li className={classNames({'active': path === '/'})}><Link to='/'>Projects</Link></li>
-              <li className={classNames({'active': path === '/users'})}><Link to='/users'>Users</Link></li>
+              <li className={classNames({'active': this.props.path === '/'})}><Link to='/'>Projects</Link></li>
+              <li className={classNames({'active': this.props.path === '/users'})}><Link to='/users'>Users</Link></li>
             </ul>
 
-            {user ? (
+            {this.props.user ? (
               <ul className="nav navbar-nav navbar-right">
                 <li className='profile-link'><Link to='/'>Profile</Link></li>
-                <li className='logout-link'><a href="#">Logout</a></li>
+                <li className='logout-link'><a onClick={this.logout} href="#">Logout</a></li>
               </ul>
             ) : (
               <ul className="nav navbar-nav navbar-right">
@@ -38,6 +47,15 @@ const Header = ({path, user}) => {
         </div>
       </nav>
     </div>)
+  }
 }
 
-export default Header
+Header.contextTypes = {
+  router: React.PropTypes.object.isRequired
+};
+
+Header.propTypes = {
+  setUser: React.PropTypes.func.isRequired
+};
+
+export default connect(null, {setUser})(Header)

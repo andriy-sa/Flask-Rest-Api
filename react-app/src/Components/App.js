@@ -1,26 +1,14 @@
 import React from 'react';
 import Header from './Blocks/Header'
+import { connect } from 'react-redux'
 
 class App extends React.Component {
-
-  state = {
-    activeUser: null
-  }
-
-  logout() {
-    localStorage.setItem('jwtToken', '');
-    this.setState({
-      activeUser: null
-    });
-    this.context.router.push('/login');
-  };
-
 
   render() {
     let path = this.props.location.pathname;
     return (
       <div className="App">
-        <Header path={path} user={this.state.activeUser}/>
+        <Header path={path} user={this.props.activeUser}/>
         <div id="content">
           <div className="container">
             {this.props.children}
@@ -31,4 +19,10 @@ class App extends React.Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    activeUser: state.authReducer.activeUser
+  }
+}
+
+export default connect(mapStateToProps, {})(App);

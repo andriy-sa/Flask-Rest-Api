@@ -2,12 +2,15 @@ import axios from 'axios'
 
 let baseUrl = 'http://silverdeer.flask/api/'
 
-let token = localStorage.getItem('jwtToken');
-if(token){
-  axios.defaults.headers.common['Authorization'] = `JWT ${token}`;
-}
+
 
 axios.interceptors.request.use(function (config) {
+
+  let token = localStorage.getItem('jwtToken');
+  if(token){
+    axios.defaults.headers.common['Authorization'] = `JWT ${token}`;
+  }
+
   config.headers.common['Authorization'] = `JWT ${token}`;
   return config;
 }, function (error) {

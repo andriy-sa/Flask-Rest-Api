@@ -1,6 +1,5 @@
 import React from 'react'
 import Api from '../Api'
-import axios from 'axios'
 
 class Login extends React.Component {
 
@@ -34,7 +33,7 @@ class Login extends React.Component {
         error: ''
       });
       localStorage.setItem('jwtToken', response.data.access_token);
-      axios.defaults.headers.common['Authorization'] = `JWT ${response.data.access_token}`;
+      this.context.router.push('/');
 
     }, (e) => {
       if (e.response && e.response.data && e.response.data.description) {
@@ -70,5 +69,12 @@ class Login extends React.Component {
       </div>
     );
   }
+
+
 }
+
+Login.contextTypes = {
+  router: React.PropTypes.object.isRequired
+};
+
 export default Login
