@@ -6,15 +6,7 @@ import { setUser } from '../Actions/Auth'
 export default function (ComposedComponent) {
   class Authenticate extends React.Component {
 
-    //constructor(props){
-    //  super(props);
-    //
-    //  this.state = {
-    //    activeUser: null
-    //  }
-    //}
-
-    componentWillMount() {
+    componentDidMount() {
       this.checkLogin()
     }
 

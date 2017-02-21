@@ -35,7 +35,7 @@ class Header extends React.Component {
 
             {this.props.user ? (
               <ul className="nav navbar-nav navbar-right">
-                <li className='profile-link'><Link to='/'>Profile</Link></li>
+                <li className='profile-link'><Link to='/'>Profile ({this.props.user.username})</Link></li>
                 <li className='logout-link'><a onClick={this.logout} href="#">Logout</a></li>
               </ul>
             ) : (

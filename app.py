@@ -27,7 +27,6 @@ def _before_reques():
 def _after_request(response):
     response.headers["Access-Control"] = "*"
     response.headers["Access-Control-Allow-Origin"] = "*"
-    #response.headers["Access-Control-Allow-Credentials"] = "true"
     response.headers["Access-Control-Allow-Headers"] = "X-REQUESTED-WITH, CONTENT-TYPE, ACCEPT, Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, HEAD, OPTIONS"
     response.headers["Access-Control-Expose-Headers"] = "CONTENT-TYPE, X-DEPRECATED"
@@ -92,7 +91,7 @@ def create_elastic_index():
                     "autocomplete_filter": {
                         "type": "edge_ngram",
                         "min_gram": 1,
-                        "max_gram": 20
+                        "max_gram": 50
                     }
                 },
                 "analyzer": {
@@ -115,7 +114,7 @@ def create_elastic_index():
                     },
                     "title": {
                         "type": "string",
-                        "analyzer": "autocomplete",
+                        "analyzer": "autocomplete"
                     },
                     "description": {
                         "type": "string",

@@ -5,6 +5,7 @@ from forms import ProjectForm
 from models.company import Company
 from models.project import Project
 from elastic import Elastic
+from underscore import _
 
 projects_view = Blueprint('projects_view', __name__)
 
@@ -18,11 +19,34 @@ def get_by_id(id):
     return jsonify(project.serialize()), 200
 
 
+@projects_view.route('/get_list', methods=['GET'])
+def get_list():
+    elastic = Elastic()
+    result = elastic.search_project()
+    ids = _.pluck(result['hits']['hits'],'_id')
+
+    page = int_from_request('page',1)
+    limit = int_from_request('limit',10)
+    sort, reverse = prepare_sorting_params(['title','price','id','company'],'id')
+
+    projects = Project.where_in('projects.id',ids)\
+        .select('projects.*','c.name as company')\
+        .left_join('companies as c','c.id','=','projects.company_id')\
+        .order_by(sort, reverse)\
+        .paginate(limit, page)
+
+    response = {
+        'count': projects.total,
+        'data': projects.serialize()
+    }
+
+    return jsonify(response), 200
+
+
 @projects_view.route('/search', methods=["GET"])
 def search():
     elastic = Elastic()
     result = elastic.search_project()
-
     return jsonify(result['hits']), 200
 
 

@@ -40,7 +40,7 @@ class Elastic(object):
 
         result = Search(using=es, index=self.index, doc_type='projects')
         if q:
-            result = result.query("match", title=q) \
+            result = result.query("match_phrase", title=q) \
                 .highlight('title')
 
         result = result.filter(Q('term', published=published)) \

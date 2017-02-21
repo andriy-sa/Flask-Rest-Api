@@ -2,12 +2,10 @@ import axios from 'axios'
 
 let baseUrl = 'http://silverdeer.flask/api/'
 
-
-
 axios.interceptors.request.use(function (config) {
 
   let token = localStorage.getItem('jwtToken');
-  if(token){
+  if (token) {
     axios.defaults.headers.common['Authorization'] = `JWT ${token}`;
   }
 
@@ -19,8 +17,24 @@ axios.interceptors.request.use(function (config) {
 
 export default {
   Projects: {
-    search() {
-      return axios.get(baseUrl + 'project/search')
+    get_list(filter) {
+      let rev = 'DESC';
+      if(filter.reverse){
+        rev = 'ASC'
+      }
+
+      return axios.get(baseUrl + 'project/get_list', {
+        params: {
+          q: filter.q,
+          page: filter.page,
+          limit: filter.limit,
+          sort: filter.sort,
+          reverse: rev
+        }
+      })
+    },
+    search(q) {
+      return axios.get(baseUrl + 'project/search?q=' + q)
     }
   },
   Auth: {
