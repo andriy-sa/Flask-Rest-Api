@@ -3,6 +3,7 @@ import api from '../Api'
 import Pagination from 'react-js-pagination'
 import classNames from 'classnames'
 import {debounce} from 'lodash'
+import {Link} from 'react-router'
 
 class Projects extends React.Component {
 
@@ -121,7 +122,9 @@ class Projects extends React.Component {
                   <td>{v.company}</td>
                   <td>${v.price}</td>
                   <td>
-                    <a href="#">More</a>
+										<Link to={`/project/${v.id}`} >
+											More
+										</Link>
                   </td>
                 </tr>
               )

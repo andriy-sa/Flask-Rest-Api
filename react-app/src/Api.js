@@ -33,9 +33,12 @@ export default {
         }
       })
     },
-    search(q) {
-      return axios.get(baseUrl + 'project/search?q=' + q)
-    }
+    autocomplete(q) {
+      return axios.get(baseUrl + 'project/autocomplete?q=' + q)
+    },
+		get_by_id(id){
+    	return axios.get(baseUrl+'project/get_by_id/'+id)
+		}
   },
   Auth: {
     me(){

@@ -48,6 +48,22 @@ class Elastic(object):
             .execute()
         return result.to_dict()
 
+    def autocomplete_project(self):
+        q = request.args.get('q', '')
+        if not q:
+            return self.get_empty_elastic_result()
+
+        result = Search(using=es, index=self.index, doc_type='projects') \
+            .query("match", title=q) \
+            .highlight('title') \
+            .filter(Q('term', published=True))
+
+
+        result = result[0:10].execute()
+
+        return result.to_dict()
+
+
     def geo_search_project(self):
         published = bool(request.args.get('published', True))
 

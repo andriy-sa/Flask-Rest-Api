@@ -15,7 +15,7 @@ class Header extends React.Component {
   render() {
 
     return (<div className="header">
-      <nav className="navbar navbar-default">
+      <nav className="navbar navbar-default m-b-0">
         <div className="container">
           <div className="navbar-header">
             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"

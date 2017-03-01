@@ -43,10 +43,10 @@ def get_list():
     return jsonify(response), 200
 
 
-@projects_view.route('/search', methods=["GET"])
+@projects_view.route('/autocomplete', methods=["GET"])
 def search():
     elastic = Elastic()
-    result = elastic.search_project()
+    result = elastic.autocomplete_project()
     return jsonify(result['hits']), 200
 
 
