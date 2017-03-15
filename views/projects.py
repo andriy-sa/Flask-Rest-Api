@@ -1,11 +1,13 @@
 from flask import Blueprint, make_response, jsonify, request
-from models.project import Project
+from models.user import User
 from helpers import int_from_request, prepare_sorting_params
 from forms import ProjectForm
 from models.company import Company
 from models.project import Project
 from elastic import Elastic
 from underscore import _
+from rq import Queue
+from worker import conn
 
 projects_view = Blueprint('projects_view', __name__)
 
@@ -129,3 +131,17 @@ def sync():
         elastic.sync_project_document(project)
 
     return jsonify({'message': 'projects successfully sync to elastic'}), 200
+
+@projects_view.route('/test_queue', methods=["GET"])
+def test_queue():
+    q = Queue('low',connection=conn)
+    job = q.enqueue(test_job, args=('Andy Smolyar',))
+    q = Queue('high', connection=conn)
+    job = q.enqueue(test_job, args=('High Andy',))
+    return "Success Test Job"
+
+
+def test_job(name):
+    user = User.find(1)
+    user.username = name
+    user.save()

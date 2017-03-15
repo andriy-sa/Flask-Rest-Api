@@ -3,9 +3,18 @@ from base64 import encodebytes
 from datetime import timedelta
 
 ORATOR_DATABASES = {
-    'default': {
+    'default': 'main',
+    'main': {
         'driver': 'postgres',
         'database': 'flask',
+        'user': 'postgres',
+        'password': '1',
+        'host': '127.0.0.1',
+        'port': '5432',
+    },
+    'testing': {
+        'driver': 'postgres',
+        'database': 'test_flask',
         'user': 'postgres',
         'password': '1',
         'host': '127.0.0.1',

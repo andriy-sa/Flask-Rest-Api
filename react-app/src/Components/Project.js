@@ -4,20 +4,20 @@ import Map from './Blocks/Map'
 
 class Project extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      project: {},
+	constructor(props) {
+		super(props);
+		this.state = {
+			project: {},
 			markers: []
-    }
-  };
+		}
+	};
 
 	createMarkup = (data) => {
 		return {__html: data}
 	};
 
-  componentDidMount(){
-  	let id = this.props.params.id || 0;
+	componentDidMount() {
+		let id = this.props.params.id || 0;
 		api.Projects.get_by_id(id).then(response => {
 			if (response.status === 200) {
 				let markers = [];
@@ -29,16 +29,16 @@ class Project extends React.Component {
 					key: new Date().getTime(),
 					defaultAnimation: 2
 				});
-				this.setState({project : response.data, markers: markers})
-			}else{
+				this.setState({project: response.data, markers: markers})
+			} else {
 				this.context.router.push('/404');
 			}
 		})
 	}
 
-  render() {
-    return (
-      <div id="projectPage">
+	render() {
+		return (
+			<div id="projectPage">
 				<div className="col-sm-6">
 					<div className="project-title">
 						{ this.state.project.title }
@@ -47,7 +47,8 @@ class Project extends React.Component {
 						<label>Price:</label>
 						<span>${ this.state.project.price }</span>
 					</div>
-					<div dangerouslySetInnerHTML={this.createMarkup(this.state.project.description)} className="project-description">
+					<div dangerouslySetInnerHTML={this.createMarkup(this.state.project.description)}
+							 className="project-description">
 					</div>
 					<div className="project-date">
 						<label>Date:</label>
@@ -56,12 +57,12 @@ class Project extends React.Component {
 				</div>
 				<div className="col-sm-6">
 					<div className="project-map">
-						<Map project={this.state.project}  markers={this.state.markers} />
+						<Map project={this.state.project} markers={this.state.markers}/>
 					</div>
 				</div>
-      </div>
-    )
-  }
+			</div>
+		)
+	}
 }
 
 Project.contextTypes = {

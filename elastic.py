@@ -54,15 +54,13 @@ class Elastic(object):
             return self.get_empty_elastic_result()
 
         result = Search(using=es, index=self.index, doc_type='projects') \
-            .query("match", title=q) \
-            .highlight('title') \
-            .filter(Q('term', published=True))
-
+                     .query("match", title=q) \
+                     .highlight('title') \
+                     .filter(Q('term', published=True))
 
         result = result[0:10].execute()
 
         return result.to_dict()
-
 
     def geo_search_project(self):
         published = bool(request.args.get('published', True))
@@ -76,10 +74,8 @@ class Elastic(object):
             result = result.filter(Q('term', published=published)) \
                 .filter('geo_distance', distance="10km", location={"lat": lat, "lon": lon}) \
                 .execute()
-        except:
+        except Exception as e:
             return self.get_empty_elastic_result()
-
-        # .sort('-price') \
 
         return result.to_dict()
 
@@ -91,3 +87,4 @@ class Elastic(object):
                 'total': 0
             }
         }
+        # .sort('-price')

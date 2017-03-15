@@ -11,12 +11,12 @@ class ProjectEdit extends React.Component {
 		}
 	};
 
-	componentDidMount(){
+	componentDidMount() {
 		let id = this.props.params.id || 0;
 		api.Projects.get_by_id(id).then(response => {
 			if (response.status === 200) {
-				this.setState({project : response.data})
-			}else{
+				this.setState({project: response.data})
+			} else {
 				this.context.router.push('/404');
 			}
 		})
