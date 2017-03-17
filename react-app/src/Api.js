@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-let baseUrl = 'http://silverdeer.flask/api/'
+let baseUrl = 'http://silverdeer.flask/api/';
 
 axios.interceptors.request.use(function (config) {
 
@@ -38,6 +38,9 @@ export default {
 		},
 		get_by_id(id){
 			return axios.get(baseUrl + 'project/get_by_id/' + id)
+		},
+		update(project){
+			return axios.put(baseUrl+'project/update/'+project.id, project);
 		}
 	},
 	Auth: {

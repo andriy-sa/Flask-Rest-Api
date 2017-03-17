@@ -23,13 +23,13 @@ def get_by_id(id):
 
 @projects_view.route('/get_list', methods=['GET'])
 def get_list():
+    page = int_from_request('page', 1)
+    limit = int_from_request('limit', 10)
+    sort, reverse = prepare_sorting_params(['title', 'price', 'id', 'company'], 'id')
+
     elastic = Elastic()
     result = elastic.search_project()
     ids = _.pluck(result['hits']['hits'],'_id')
-
-    page = int_from_request('page',1)
-    limit = int_from_request('limit',10)
-    sort, reverse = prepare_sorting_params(['title','price','id','company'],'id')
 
     projects = Project.where_in('projects.id',ids)\
         .select('projects.*','c.name as company')\
@@ -86,17 +86,18 @@ def create():
 
 @projects_view.route('/update/<int:id>', methods=["PUT"])
 def update(id):
+
     project = Project.find(id)
     if not project:
         return jsonify({'message': 'project not found'}), 404
 
-    form = ProjectForm(request.form)
+    form = ProjectForm.from_json(request.get_json())
     form.company_id.choices = [(str(c.id), str(c.id)) for c in Company.select('id').get()]
     if not form.validate():
         return jsonify(form.errors), 400
 
     project.title = form.data.get('title')
-    project.description = form.data.get('description', '')
+    project.description = form.data.get('description', '') if form.data.get('description', '') else ''
     project.price = round(form.data.get('price'), 2)
     project.longitude = form.data.get('longitude')
     project.latitude = form.data.get('latitude')

@@ -40,3 +40,6 @@ th.sort {
 .autocomplete-box li em {
   font-weight: 600;
 }
+.DraftEditor-editorContainer {
+    min-height:150px;
+}

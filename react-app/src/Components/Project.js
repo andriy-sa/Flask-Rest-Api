@@ -1,6 +1,7 @@
 import React from 'react';
 import api from '../Api'
-import Map from './Blocks/Map'
+import GettingStartedGoogleMap from "./Blocks/Map"
+import {Link} from 'react-router'
 
 class Project extends React.Component {
 
@@ -8,7 +9,8 @@ class Project extends React.Component {
 		super(props);
 		this.state = {
 			project: {},
-			markers: []
+			markers: [],
+			center: {}
 		}
 	};
 
@@ -29,7 +31,11 @@ class Project extends React.Component {
 					key: new Date().getTime(),
 					defaultAnimation: 2
 				});
-				this.setState({project: response.data, markers: markers})
+				let center = {
+					lat: Number(response.data.latitude),
+					lng: Number(response.data.longitude)
+				};
+				this.setState({project: response.data, markers: markers, center:center})
 			} else {
 				this.context.router.push('/404');
 			}
@@ -40,6 +46,9 @@ class Project extends React.Component {
 		return (
 			<div id="projectPage">
 				<div className="col-sm-6">
+					<Link className='btn btn-success' to={`/project/edit/${this.state.project.id}`}>
+						Edit
+					</Link>
 					<div className="project-title">
 						{ this.state.project.title }
 					</div>
@@ -57,7 +66,25 @@ class Project extends React.Component {
 				</div>
 				<div className="col-sm-6">
 					<div className="project-map">
-						<Map project={this.state.project} markers={this.state.markers}/>
+						{this.state.project.latitude &&
+							<GettingStartedGoogleMap
+								googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp"
+								loadingElement={
+									<div style={{height: `400px`}}>
+										Loading...
+									</div>
+								}
+								containerElement={
+									<div style={{height: `400px`}}/>
+								}
+								mapElement={
+									<div style={{height: `400px`}}/>
+								}
+								project={this.state.project}
+								markers={this.state.markers}
+								center={this.state.center}
+							/>
+						}
 					</div>
 				</div>
 			</div>

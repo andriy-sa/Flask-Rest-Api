@@ -36,16 +36,21 @@ class Elastic(object):
         q = request.args.get('q', '')
         min_price = float_from_request('min_price', 0)
         max_price = float_from_request('max_price', 999999)
-        published = bool_from_request('published', True)
+        #published = bool_from_request('published', True)
 
         result = Search(using=es, index=self.index, doc_type='projects')
         if q:
             result = result.query("match_phrase", title=q) \
                 .highlight('title')
 
-        result = result.filter(Q('term', published=published)) \
-            .filter('range', price={'gte': min_price, 'lte': max_price}) \
-            .execute()
+        result = result\
+            .filter('range', price={'gte': min_price, 'lte': max_price})
+
+        result = result[0:10000].execute()
+
+
+        # .filter(Q('term', published=published)) \
+
         return result.to_dict()
 
     def autocomplete_project(self):
