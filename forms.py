@@ -139,7 +139,7 @@ class ProjectForm(Form):
         validators.DataRequired(),
         validators.Length(max=255)
     ])
-    description = form.TextAreaField('description')
+    description = form.TextAreaField('description',default='')
     price = form.FloatField('price', validators=[
         validators.DataRequired()
     ])

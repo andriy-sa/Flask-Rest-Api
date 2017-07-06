@@ -1,13 +1,74 @@
-<!doctype html>
-<html lang="en">
+
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Main Template</title>
+    <title>Flask-SocketIO Test</title>
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+
+
+            var socket = io('http://' + document.domain + ':' + location.port,{
+                transportOptions: {
+                    polling: {
+                      extraHeaders: {
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDQ0NTAwNjksImlkIjoxfQ.VXOTQq-pZjZcyt4RnIB_PcL4nQ3ukviL-Q_fN-8U1hU'
+                      }
+                    }
+                  }
+            });
+            console.log(socket);
+            socket.on('connect', function() {
+                console.log('connected');
+                socket.emit('test_event', {data: 'I\'m connected!'});
+            });
+
+            socket.on('flask', function(msg) {
+               console.log('from flask');
+               console.log(msg);
+            });
+
+            $('form#emit').submit(function(event) {
+                console.log('send test message');
+                socket.emit('test_event', {data: 'test_data'});
+                return false;
+            });
+        });
+    </script>
 </head>
 <body>
-    Hello World
+    <h1>Flask-SocketIO Test</h1>
+    <h2>Send:</h2>
+    <form id="emit" method="POST" action='#'>
+        <input type="text" name="emit_data" id="emit_data" placeholder="Message">
+        <input type="submit" value="Echo">
+    </form>
+    <form id="broadcast" method="POST" action='#'>
+        <input type="text" name="broadcast_data" id="broadcast_data" placeholder="Message">
+        <input type="submit" value="Broadcast">
+    </form>
+    <form id="join" method="POST" action='#'>
+        <input type="text" name="join_room" id="join_room" placeholder="Room Name">
+        <input type="submit" value="Join Room">
+    </form>
+    <form id="leave" method="POST" action='#'>
+        <input type="text" name="leave_room" id="leave_room" placeholder="Room Name">
+        <input type="submit" value="Leave Room">
+    </form>
+    <form id="send_room" method="POST" action='#'>
+        <input type="text" name="room_name" id="room_name" placeholder="Room Name">
+        <input type="text" name="room_data" id="room_data" placeholder="Message">
+        <input type="submit" value="Send to Room">
+    </form>
+    <form id="close" method="POST" action="#">
+        <input type="text" name="close_room" id="close_room" placeholder="Room Name">
+        <input type="submit" value="Close Room">
+    </form>
+    <form id="disconnect" method="POST" action="#">
+        <input type="submit" value="Disconnect">
+    </form>
+    <h2>Receive:</h2>
+    <div><p id="log"></p></div>
 </body>
 </html>

@@ -69,7 +69,7 @@ def create():
 
     project = Project.create({
         "title": form.data.get('title'),
-        "description": form.data.get('description', ''),
+        "description": str(form.data.get('description', '')),
         "price": round(form.data.get('price'), 2),
         "longitude": form.data.get('longitude'),
         "latitude": form.data.get('latitude'),

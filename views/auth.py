@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app, _request_ctx_stack
 from flask_login import logout_user, current_user
-from app import jwt
+from app import jwt, socketio
+from flask_socketio import emit
 from flask_jwt import JWTError
 from jwt import InvalidTokenError
 
@@ -24,7 +25,6 @@ def login():
         return jsonify({'user': user.serialize(), 'access_token': access_token.decode('utf-8')}), 200
     else:
         raise JWTError('Bad Request', 'Invalid credentials')
-
 
 
 @auth_view.route('/logout', methods=['GET'])
@@ -52,3 +52,16 @@ def me():
         raise JWTError('Invalid JWT', 'User does not exist')
 
     return jsonify(identity), 200
+
+
+# Sockets events
+@socketio.on('connect')
+def test_connect():
+    print(request.headers)
+    emit('flask', {'data': 'Connected'})
+
+
+@socketio.on('test_event')
+def test_event(message):
+    print(message)
+    emit('flask', {'data': 'test event received'})

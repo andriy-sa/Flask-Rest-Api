@@ -10,7 +10,7 @@ class CreateProjectsTable(Migration):
         with self.schema.create('projects') as table:
             table.increments('id')
             table.string('title')
-            table.text('description').default('')
+            table.text('description')
             table.decimal('price', 10, 2)
             table.string('longitude')
             table.string('latitude')

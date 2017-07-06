@@ -1,4 +1,4 @@
-from flask import Flask, g, jsonify
+from flask import Flask, g, jsonify, request
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_orator import Orator
@@ -6,6 +6,7 @@ from flask_elasticsearch import FlaskElasticsearch
 import click
 from config import development, production, testing
 from flask_jwt import JWT, current_identity
+from flask_socketio import SocketIO, emit
 import wtforms_json
 
 app = Flask(__name__)
@@ -17,7 +18,7 @@ bcrypt = Bcrypt()
 es = FlaskElasticsearch()
 
 jwt = JWT()
-
+socketio = SocketIO(app, async_mode='eventlet')
 
 @app.before_request
 def _before_reques():
@@ -88,7 +89,7 @@ def create_elastic_index():
     settings = {
         "settings": {
             "number_of_shards": 5,
-            "number_of_replicas":1,
+            "number_of_replicas": 1,
             "analysis": {
                 "filter": {
                     "autocomplete_filter": {
