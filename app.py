@@ -1,28 +1,34 @@
-from flask import Flask, g, jsonify, request
+from flask import Flask, g, jsonify
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, current_user
 from flask_orator import Orator
 from flask_elasticsearch import FlaskElasticsearch
 import click
 from config import development, production, testing
-from flask_jwt import JWT, current_identity
-from flask_socketio import SocketIO, emit
+from flask_jwt import JWT, JWTError
+from flask_socketio import SocketIO
 import wtforms_json
+from jwt import InvalidTokenError
 
 app = Flask(__name__)
 
 db = Orator()
-
-login_manager = LoginManager()
 bcrypt = Bcrypt()
 es = FlaskElasticsearch()
 
 jwt = JWT()
 socketio = SocketIO(app, async_mode='eventlet')
 
+
 @app.before_request
 def _before_reques():
-    g.user = current_user
+    try:
+        token = jwt.request_callback()
+        payload = jwt.jwt_decode_callback(token)
+        g.user = jwt.identity_callback(payload)
+    except InvalidTokenError:
+        g.user = None
+    except JWTError:
+        g.user = None
 
 
 @app.after_request
@@ -50,7 +56,6 @@ def create_app(type='development'):
         app.config.from_object(testing)
 
     db.init_app(app)
-    login_manager.init_app(app)
     bcrypt.init_app(app)
     es.init_app(app)
     wtforms_json.init()

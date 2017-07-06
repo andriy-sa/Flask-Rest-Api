@@ -1,4 +1,4 @@
-from flask import Blueprint, make_response, jsonify, request
+from flask import Blueprint, make_response, jsonify, request, g
 from models.company import Company
 from helpers import int_from_request, prepare_sorting_params
 from forms import CompanyForm

@@ -1,5 +1,5 @@
 from orator import Model
-from app import login_manager, bcrypt
+from app import bcrypt
 from models import company
 from orator.orm import belongs_to
 
@@ -34,11 +34,6 @@ class User(Model):
 
     def is_authenticated(self):
         return True
-
-
-@login_manager.user_loader
-def _user_loader(user_id):
-    return User.find(int(user_id))
 
 
 def identity(payload):
