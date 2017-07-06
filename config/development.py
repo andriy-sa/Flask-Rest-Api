@@ -36,6 +36,7 @@ STATIC_DIR = os.path.join(APPLICATION_DIR, 'static')
 IMAGES_DIR = os.path.join(STATIC_DIR, 'images')
 WTF_CSRF_ENABLED = False
 ELASTICSEARCH_HTTP_AUTH = 'es_admin:141294'
+JWT_AUTH_HEADER_PREFIX = 'Bearer'
 JWT_AUTH_URL_RULE = '/api/auth'
 JWT_AUTH_USERNAME_KEY = 'email'
 JWT_EXPIRATION_DELTA = timedelta(days=30)

@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, current_app, g
 from app import jwt, socketio
 from flask_socketio import emit
 from flask_jwt import JWTError
+from helpers import get_jwt_user
 
 auth_view = Blueprint('auth_view', __name__)
 
@@ -44,4 +45,6 @@ def test_connect():
 @socketio.on('test_event')
 def test_event(message):
     print(message)
+    user = get_jwt_user()
+    print(user)
     emit('flask', {'data': 'test event received'})

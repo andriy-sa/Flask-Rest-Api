@@ -4,10 +4,9 @@ from flask_orator import Orator
 from flask_elasticsearch import FlaskElasticsearch
 import click
 from config import development, production, testing
-from flask_jwt import JWT, JWTError
 from flask_socketio import SocketIO
 import wtforms_json
-from jwt import InvalidTokenError
+from helpers import jwt, get_jwt_user
 
 app = Flask(__name__)
 
@@ -15,20 +14,13 @@ db = Orator()
 bcrypt = Bcrypt()
 es = FlaskElasticsearch()
 
-jwt = JWT()
+
 socketio = SocketIO(app, async_mode='eventlet')
 
 
 @app.before_request
 def _before_reques():
-    try:
-        token = jwt.request_callback()
-        payload = jwt.jwt_decode_callback(token)
-        g.user = jwt.identity_callback(payload)
-    except InvalidTokenError:
-        g.user = None
-    except JWTError:
-        g.user = None
+    g.user = get_jwt_user()
 
 
 @app.after_request

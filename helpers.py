@@ -1,5 +1,9 @@
 from flask import request
 import random, string
+from jwt import InvalidTokenError
+from flask_jwt import JWT, JWTError
+
+jwt = JWT()
 
 
 def int_from_request(field, default):
@@ -43,3 +47,16 @@ def prepare_sorting_params(sort_list, default):
 
 def str_random(length):
     return ''.join(random.choice(string.ascii_lowercase) for i in range(length))
+
+
+def get_jwt_user():
+    try:
+        token = jwt.request_callback()
+        payload = jwt.jwt_decode_callback(token)
+        user = jwt.identity_callback(payload)
+    except InvalidTokenError:
+        user = None
+    except JWTError:
+        user = None
+
+    return user
