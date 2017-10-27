@@ -140,3 +140,7 @@ def create_elastic_index():
     # create index
     res = es.indices.create(index=index, ignore=400, body=settings)
     click.echo('Index created')
+
+@app.cli.command()
+def test_com():
+    click.echo('test_com')

@@ -3,13 +3,13 @@ from base64 import encodebytes
 from datetime import timedelta
 
 ORATOR_DATABASES = {
-    'default': 'mysql',
+    'default': 'main',
     'main': {
         'driver': 'postgres',
         'database': 'flask',
-        'user': 'postgres',
+        'user': 'flask-user',
         'password': '1',
-        'host': '127.0.0.1',
+        'host': 'host-postgres',
         'port': '5432',
     },
     'mysql': {
@@ -35,7 +35,8 @@ SECRET_KEY = "c4623a202d5b4e47c9a28380c60de500d5815b78"
 STATIC_DIR = os.path.join(APPLICATION_DIR, 'static')
 IMAGES_DIR = os.path.join(STATIC_DIR, 'images')
 WTF_CSRF_ENABLED = False
-ELASTICSEARCH_HTTP_AUTH = 'es_admin:141294'
+#ELASTICSEARCH_HTTP_AUTH = 'es_admin:141294'
+ELASTICSEARCH_HOST = 'host-elastic'
 JWT_AUTH_HEADER_PREFIX = 'Bearer'
 JWT_AUTH_URL_RULE = '/api/auth'
 JWT_AUTH_USERNAME_KEY = 'email'

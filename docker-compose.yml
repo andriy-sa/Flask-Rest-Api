@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  python:
+    build: .
+    container_name: flask-python
+    ports:
+      - 1337:8000
+    networks:
+      - backend
+    volumes:
+      - .:/app
+    environment:
+      FLASK_APP: run
+    depends_on:
+      - postgres
+      - pgadmin
+      - elasticsearch
+  postgres:
+    image: postgres:9.6.5
+    container_name: flask-postgres
+    environment:
+      POSTGRES_DB: flask
+      POSTGRES_USER: flask-user
+      POSTGRES_PASSWORD: 1
+    volumes:
+      - ~/.flask-postgres1:/var/lib/postgresql/data
+      - .:/app
+    networks:
+      backend:
+        aliases:
+          - host-postgres
+    logging:
+      driver: none
+  pgadmin:
+    image: zhajor/docker-phppgadmin
+    container_name: flask-pgadmin
+    environment:
+      DB_HOST: host-postgres
+    ports:
+      - 5050:80
+    networks:
+      - backend
+    logging:
+      driver: none
+  elasticsearch:
+    image: elasticsearch
+    container_name: flask-elastic
+    ports:
+      - 9201:9200
+    volumes:
+      - ~/.esdata:/usr/share/elasticsearch/data
+    networks:
+      backend:
+        aliases:
+          - host-elastic
+    logging:
+      driver: none
+networks:
+  backend:
