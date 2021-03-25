@@ -45,7 +45,7 @@ python-engineio==1.7.0
 python-socketio==1.7.6
 pytz==2016.10
 pytzdata==2016.10
-PyYAML==3.12
+PyYAML==5.4
 redis==2.10.5
 rq==0.7.1
 rq-dashboard==0.3.7
